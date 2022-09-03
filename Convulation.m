@@ -28,7 +28,7 @@ while(k<=sumRC)
             end
         end
     end
-    ans=[ans sum]
+    ans=[ans sum];
     sum=0;
     k=k+1;
 end
