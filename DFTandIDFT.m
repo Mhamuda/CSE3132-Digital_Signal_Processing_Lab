@@ -4,58 +4,80 @@ close all;
 
 %Discrete Fourier Transform :
 
-x = input('Enter the input sequence : ');
-N = input('Enter the value point : ');
-xLength = length(x);
+xInput = [1 2 3 4 5 6 7];
+nPoint = length(xInput);   %How many point dft
+n = 0:nPoint-1;
+xLength = length(xInput);
+subplot(3,2,1);
+stem(n,xInput,'*');
 
-if(N<xLength)
-    error('Cannot perform dft');
-else
-    for i = 1:N-xLength
-        x = [x 0];
+if(nPoint<xLength)
+    error('Can not perform DFT.Point should be >=length.');
+end
+
+xInput = [xInput zeros(1,nPoint-xLength)];
+
+xDFT = zeros(1,nPoint);
+for k = 0:nPoint-1
+    for n = 0:nPoint-1
+        xDFT(k+1) = xDFT(k+1)+xInput(n+1)*exp(-1j*2*pi*n*k/nPoint);
     end
 end
 
-X = [];
-xx = 0;
+%Ploting magnitude (Symmetry property of DFT):
+disp(xDFT);
 
-for k = 0:N-1
-    for n = 0:N-1
-        xx = xx+x(n+1)*exp(-j*2*pi*k*n/N);
-    end
-    X = [X xx];
-    xx=0;
-end
-
-n = 0:N-1;
-subplot(4,1,1);
-plot(n,x);
+n = 0:nPoint-1;
+subplot(3,2,2);
+plot(n,abs(xDFT));
 axis tight;
-title('Input of x');
+title('Magnitude spectrum');
 
-subplot(4,1,2);
-plot(n,abs(X));
-axis tight;
-title('Magnitude Spectrum');
+%Ploting phase
 
-subplot(4,1,3);
-plot(n,angle(X));
+n = 0:nPoint-1;
+subplot(3,2,3);
+plot(n,angle(xDFT));
 axis tight;
-title('Angle or Phase Spectrum ');
+title('Angle or Phase spectrum');
 
 %Inverse Discrete Fourier Transform :
 
-for k= 0:N-1
-    xInv(k+1)=0;
-    for n = 0:N-1
-        xInv(k+1) = xInv(k+1)+X(n+1)*exp(j*2*pi*n*k/N);
+xInv = zeros(1,nPoint);
+for k = 0:nPoint-1
+    for n = 0:nPoint-1
+        xInv(k+1)=xInv(k+1)+xDFT(n+1)*exp(1j*2*pi*n*k/nPoint);
     end
-    xInv(k+1) = xInv(k+1)/N;
+    xInv(k+1) = xInv(k+1)/nPoint;
 end
 
-n = 0:N-1;
-disp(xInv);
-subplot(4,1,4);
-plot(n, xInv);
+%Ploting Inverse DFT
+
+n = 0:nPoint-1;
+subplot(3,2,4);
+stem(n,xInv,'*');
 axis tight;
-title('Inverse Discrete Fourier Transform');
+
+%Time shift property :
+
+m=2;
+for k = 0:nPoint-1
+    xDFT(k+1) = xDFT(k+1)*exp(1j*2*pi*k*m/nPoint);
+end
+
+xInv = zeros(1,nPoint);
+for k=0:nPoint-1
+    for n = 0:nPoint-1
+        xInv(k+1)=xInv(k+1)+xDFT(n+1)*exp(1j*2*pi*n*k/nPoint);
+    end
+    xInv(k+1)=xInv(k+1)/nPoint;
+end
+
+%Ploting shifter inverse DFT :
+
+n = 0:nPoint-1;
+subplot(3,2,5);
+stem(n,xInv,'*');
+axis tight;
+title('Shifted Inverse DFT');
+

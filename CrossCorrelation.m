@@ -1,58 +1,31 @@
-%Cross Correlation
-
 clc;
 clear all;
 close all;
 
+%x = input('Enter the value of x');
+%h = input('Enter the value of h');
+%input formet = [1 2 3 4 5];
+
 x = [0 1 2 3];
 y = [1 1 2 1];
+yNeg = fliplr(y);
 
-h = [];
-
-for i = length(y):-1:1
-    h  = [h y(i)];
+z = [];
+for i = 1:length(x)
+    xyNeg = yNeg.*x(i);
+    z = [z; xyNeg];
 end
 
-arr = [];
+[row, col] = size(z);
+ans = zeros(1,row+col-1);
 
-for i =1:length(x)
-    temp = h.*x(i);
-    arr = [arr;temp];
-end
-
-[row, col] = size(arr);
-sumRC = row+col;
-sum = 0;
-k=2;
-ans = [];
-
-while(k<=sumRC)
-    for i =1:row
-        for j = 1:col
-            if(i+j==k)
-                sum=sum+arr(i,j);
-            end
-        end
+for i = 1:row
+    for j = 1:col
+        ans(i+j-1) = ans(i+j-1)+z(i,j);
     end
-    ans = [ans sum];
-    sum=0;
-    k=k+1;
 end
 
+n = -(length(y)-1):length(x)-1;
 disp(ans);
+stem(n,ans);
 
-subplot(3,1,1);
-stem(x);
-xlabel('x');
-ylabel('Input sequence');
-
-subplot(3,1,2);
-stem(h);
-xlabel('h');
-ylabel('Impulse sequence');
-
-subplot(3,1,3);
-stem(ans);
-xlabel('Ans');
-ylabel('Output sequence');
-title('Cross Correlation');
